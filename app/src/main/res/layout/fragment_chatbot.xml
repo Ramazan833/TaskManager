@@ -1,74 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chat_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient">
+    android:background="@drawable/animated_gradient_background"
+    tools:context=".ChatBotFragment">
 
-    <RelativeLayout
-        android:id="@+id/headerLayout"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="24dp" 
+        android:background="@android:color/transparent"
+        android:elevation="0dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Чат-Бот"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_gravity="center">
 
-        <TextView
-            android:id="@+id/tvNewChat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Жаңа чат"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:padding="8dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackground"/>
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_chatbot_avatar" 
+                android:layout_marginEnd="8dp"/>
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Чат-Бот"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvChat"
+        android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/headerLayout"
-        android:layout_above="@+id/chatInputLayout"
-        android:padding="16dp" />
+        android:layout_below="@id/toolbar"
+        android:layout_above="@+id/input_layout"
+        android:padding="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
-    <LinearLayout
-        android:id="@+id/chatInputLayout"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:gravity="center_vertical">
+        android:layout_margin="8dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp">
 
-        <EditText
-            android:id="@+id/etChatMessage"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Хабарлама жазыңыз..."
-            android:background="@drawable/chat_input_background"
-            android:padding="14dp"
-            android:textColor="#333333"/>
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:gravity="center_vertical">
 
-        <ImageButton
-            android:id="@+id/btnSendMessage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_send"
-            android:background="@drawable/task_icon_background"
-            android:layout_marginStart="12dp"/>
+            <EditText
+                android:id="@+id/message_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Напишите сообщение..."
+                android:background="@android:color/transparent"
+                android:padding="12dp"/>
 
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/send_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/send_button_background"
+                android:src="@drawable/ic_send"
+                app:tint="@android:color/white" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </RelativeLayout>
