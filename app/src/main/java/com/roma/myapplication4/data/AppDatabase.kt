@@ -4,27 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Task::class, User::class], version = 2, exportSchema = false)
+@Database(entities = [User::class, Task::class], version = 2, exportSchema = false) // Incremented version to force recreation
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun taskDao(): TaskDao
     abstract fun userDao(): UserDao
+    abstract fun taskDao(): TaskDao
 
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
-
-        // Simple migration object
-        val MIGRATION_1_2: Migration = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                // Since the changes are mainly in data classes and we use fallback, 
-                // we don't need to write complex migration queries here.
-                // For a real app, you would alter tables here.
-            }
-        }
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -33,7 +22,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                .addMigrations(MIGRATION_1_2) // Add the migration
                 .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance

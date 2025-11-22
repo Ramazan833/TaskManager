@@ -59,26 +59,25 @@ class RegisterActivity : AppCompatActivity() {
                         // Create user object with the correct ID
                         val newUser = User(id = userId, name = name, email = email, password = "") // Never store plaintext passwords
 
-                        // Save additional user info to Realtime Database
-                        Firebase.database.getReference("Users").child(userId).setValue(newUser).addOnSuccessListener {
-                            // After saving to Firebase, also save to local Room database
-                            userViewModel.addUser(newUser)
+                        // --- CORE FIX: Save to Room FIRST and IMMEDIATELY ---
+                        userViewModel.addUser(newUser)
 
-                            // Create session
-                            val prefs = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-                            prefs.edit().apply {
-                                putString("name", newUser.name)
-                                putString("email", newUser.email)
-                                apply()
-                            }
+                        // Also try to save to Firebase Realtime DB, but don't wait for it
+                        Firebase.database.getReference("Users").child(userId).setValue(newUser)
 
-                            // Go to HomeActivity
-                            val homeIntent = Intent(this@RegisterActivity, HomeActivity::class.java)
-                            startActivity(homeIntent)
-                            finishAffinity()
-                        }.addOnFailureListener {
-                             Toast.makeText(baseContext, "Realtime Database-те сақтау мүмкін болмады.", Toast.LENGTH_SHORT).show()
+                        // Create session
+                        val prefs = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                        prefs.edit().apply {
+                            putString("name", newUser.name)
+                            putString("email", newUser.email)
+                            apply()
                         }
+
+                        // Go to HomeActivity
+                        val homeIntent = Intent(this@RegisterActivity, HomeActivity::class.java)
+                        startActivity(homeIntent)
+                        finishAffinity()
+
                     } else {
                         // If sign in fails, provide a specific error message.
                         val errorMessage = when (task.exception) {
@@ -93,10 +92,14 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         tvGoLogin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
 
         btnBack.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
             finish()
         }
     }
