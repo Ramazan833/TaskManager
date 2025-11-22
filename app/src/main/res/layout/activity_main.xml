@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="30dp"
+    android:background="@drawable/bg_gradient">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Қош келдің!"
+        android:textSize="32sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:paddingBottom="40dp"/>
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="Кіру"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#6C63FF"
+        android:layout_marginBottom="20dp"
+        android:stateListAnimator="@null"
+        android:translationZ="10dp"/>
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="Регистрация"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:backgroundTint="#ffffff"
+        android:textColor="#48C6EF"
+        android:stateListAnimator="@null"
+        android:translationZ="10dp"/>
+
+</LinearLayout>

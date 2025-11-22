@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient">
+
+    <ImageButton
+        android:id="@+id/btnBackRegister"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="88dp"
+        android:background="@drawable/btn_back_bg"
+        android:backgroundTint="#80FFFFFF"
+        android:padding="14dp"
+        android:src="@drawable/ic_back_arrow"
+        android:scaleType="centerInside"
+        android:elevation="8dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
+
+    <LinearLayout
+        android:id="@+id/registerBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="30dp"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/tvRegisterTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Регистрация"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="30dp" />
+
+        <EditText
+            android:id="@+id/etFullName"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:hint="Аты-жөні"
+            android:padding="12dp"
+            android:textSize="17sp"
+            android:background="@android:drawable/editbox_background" />
+
+        <EditText
+            android:id="@+id/etRegEmail"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="15dp"
+            android:hint="Email"
+            android:padding="12dp"
+            android:textSize="17sp"
+            android:background="@android:drawable/editbox_background" />
+
+        <EditText
+            android:id="@+id/etRegPassword"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="15dp"
+            android:hint="Құпия сөз"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textSize="17sp"
+            android:background="@android:drawable/editbox_background" />
+
+        <Button
+            android:id="@+id/btnRegisterNow"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="25dp"
+            android:text="Тіркелу"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:backgroundTint="#6C4AB6"
+            android:textColor="#FFFFFF" />
+
+        <!-- 🔹 ЖАҢА: Кіру бетіне апаратын мәтін -->
+        <TextView
+            android:id="@+id/tvGoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Тіркелген болсаңыз? Кіріңіз"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+</RelativeLayout>
