@@ -51,29 +51,21 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        // Authentication successful, now handle user data
-                        val firebaseUser = auth.currentUser
-                        val userId = firebaseUser?.uid ?: return@addOnCompleteListener
-
-                        // Immediately create a session with the data we have (email)
-                        // and proceed to HomeActivity. We will fetch the rest of the data in the background.
-                        val partialUser = User(id = userId, email = email, name = "") // Name is temporarily empty
-                        onLoginSuccess(partialUser)
+                        val userId = auth.currentUser?.uid ?: return@addOnCompleteListener
                         
-                        // In the background, fetch full user details and update Room/session
                         Firebase.database.getReference("Users").child(userId).get().addOnSuccessListener {
-                            val fullUser = it.getValue(User::class.java)
-                            if (fullUser != null) {
-                                lifecycleScope.launch {
-                                    userViewModel.addUser(fullUser) // Update Room
-                                    val prefs = getSharedPreferences("UserData", Context.MODE_PRIVATE)
-                                    prefs.edit().putString("name", fullUser.name).apply() // Update session
-                                }
+                            val user = it.getValue(User::class.java)
+                            if (user != null) {
+                                // Login is fully successful, now proceed
+                                onLoginSuccess(user)
+                            } else {
+                                // This case is unlikely if registration is correct, but good to have
+                                Toast.makeText(baseContext, "Пайдаланушы деректері табылмады.", Toast.LENGTH_SHORT).show()
                             }
+                        }.addOnFailureListener {
+                            Toast.makeText(baseContext, "Пайдаланушы деректерін алу мүмкін болмады.", Toast.LENGTH_SHORT).show()
                         }
-
                     } else {
-                        // If sign in fails, display a specific error message.
                         val errorMessage = when (task.exception) {
                             is FirebaseAuthInvalidUserException -> "Мұндай email тіркелмеген."
                             is FirebaseAuthInvalidCredentialsException -> "Құпия сөз қате."
