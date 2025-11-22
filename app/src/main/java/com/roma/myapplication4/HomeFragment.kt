@@ -36,13 +36,12 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         val prefs = requireActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE)
-        val name = prefs.getString("name", "User")
         email = prefs.getString("email", "")!!
 
         rvTasks = view.findViewById(R.id.rvTasks)
         emptyStateLayout = view.findViewById(R.id.emptyStateLayout)
-        val tvWelcome = view.findViewById<TextView>(R.id.tvWelcome)
-        tvWelcome.text = "Welcome, $name!"
+        val tvUserEmail = view.findViewById<TextView>(R.id.tvUserEmail)
+        tvUserEmail.text = email // Set user email
 
         setupRecyclerView()
 
@@ -56,7 +55,7 @@ class HomeFragment : Fragment() {
             showAddTaskDialog()
         }
 
-        view.findViewById<TextView>(R.id.tvLogout).setOnClickListener {
+        view.findViewById<ImageButton>(R.id.tvLogout).setOnClickListener { // Changed to ImageButton
             prefs.edit().clear().apply()
             startActivity(Intent(requireActivity(), MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -86,19 +85,19 @@ class HomeFragment : Fragment() {
         val etDesc = dialogView.findViewById<EditText>(R.id.edit_text_description)
 
         AlertDialog.Builder(requireContext())
-            .setTitle("New Task")
+            .setTitle("Новая задача")
             .setView(dialogView)
-            .setPositiveButton("Add") { _, _ ->
+            .setPositiveButton("Добавить") { _, _ ->
                 val title = etTitle.text.toString().trim()
                 if (title.isNotEmpty()) {
                     val newTaskId = UUID.randomUUID().toString()
                     val task = Task(id = newTaskId, email = email, title = title, description = etDesc.text.toString().trim())
                     taskViewModel.addTask(task)
                 } else {
-                    Toast.makeText(context, "Title cannot be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Заголовок не может быть пустым", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton("Отмена", null)
             .show()
     }
 
@@ -111,21 +110,21 @@ class HomeFragment : Fragment() {
         etDesc.setText(task.description)
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Edit Task")
+            .setTitle("Изменить задачу")
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton("Сохранить") { _, _ ->
                 val newTitle = etTitle.text.toString().trim()
                 if (newTitle.isNotEmpty()) {
                     val updatedTask = task.copy(title = newTitle, description = etDesc.text.toString().trim())
                     taskViewModel.updateTask(updatedTask)
                 } else {
-                    Toast.makeText(context, "Title cannot be empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Заголовок не может быть пустым", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Delete") { _, _ ->
+            .setNegativeButton("Удалить") { _, _ ->
                 taskViewModel.deleteTask(task)
             }
-            .setNeutralButton("Cancel", null)
+            .setNeutralButton("Отмена", null)
             .show()
     }
 }

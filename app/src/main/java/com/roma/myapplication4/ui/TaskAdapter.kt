@@ -3,6 +3,7 @@ package com.roma.myapplication4.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.roma.myapplication4.R
@@ -20,6 +21,8 @@ class TaskAdapter(
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         holder.bind(tasks[position])
+        // Add animation
+        holder.itemView.startAnimation(AnimationUtils.loadAnimation(holder.itemView.context, R.anim.item_animation))
     }
 
     override fun getItemCount(): Int = tasks.size

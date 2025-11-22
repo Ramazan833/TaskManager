@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient">
@@ -10,41 +11,44 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="20dp"
-        android:layout_toStartOf="@+id/tvLogout"
-        android:text="Қош келдің, Пайдаланушы!"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:text="Мои задачи"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="32sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/tvLogout"
+        android:id="@+id/tvUserEmail" 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/tvWelcome"
+        android:layout_alignStart="@id/tvWelcome"
+        android:textColor="#E0E0E0"
+        android:textSize="14sp" />
+
+    <ImageButton
+        android:id="@+id/tvLogout"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="20dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:text="Шығу"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_logout"
+        app:tint="#FFFFFF" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTasks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tvWelcome"
+        android:layout_below="@id/tvUserEmail"
+        android:layout_marginTop="16dp"
         android:clipToPadding="false"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="80dp" />
+        android:paddingTop="8dp"
+        android:paddingBottom="100dp" />
 
     <LinearLayout
         android:id="@+id/emptyStateLayout"
@@ -65,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Тапсырмалар әлі жоқ"
+            android:text="Задач пока нет"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -73,20 +77,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Жаңасын қосу үшін + басыңыз"
+            android:text="Нажмите +, чтобы добавить новую"
             android:textColor="#E0E0E0"
             android:textSize="16sp" />
     </LinearLayout>
 
-    <ImageButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnAdd"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="24dp"
-        android:background="@drawable/round_white"
-        android:elevation="8dp"
-        android:src="@drawable/ic_add" />
+        android:src="@drawable/ic_add"
+        app:backgroundTint="#FFFFFF"
+        app:elevation="8dp"
+        app:tint="#6C4AB6" />
 
 </RelativeLayout>
