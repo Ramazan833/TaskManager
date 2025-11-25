@@ -1,8 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
+}
+
+// This is the correct and safe way to load local properties.
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
 }
 
 android {
@@ -17,6 +25,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Switched to Cohere API Key
+        val cohereApiKey = (localProperties.getProperty("COHERE_API_KEY") ?: "").removeSurrounding("\"")
+        buildConfigField("String", "COHERE_API_KEY", "\"$cohereApiKey\"")
     }
 
     buildTypes {
@@ -43,14 +55,15 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // CORE FIX: Reverting from broken version catalog references to explicit dependencies.
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.activity:activity-ktx:1.9.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // RecyclerView and CardView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
@@ -65,8 +78,16 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-database-ktx")
-    implementation("com.google.firebase:firebase-auth-ktx") // Added for authentication
+    implementation("com.google.firebase:firebase-auth-ktx")
 
     // Lifecycle ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
+
+    // Ktor for networking
+    val ktor_version = "2.3.0"
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }

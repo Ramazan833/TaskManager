@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.RelativeLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 
 class ChatBotFragment : Fragment() {
 
@@ -39,23 +41,11 @@ class ChatBotFragment : Fragment() {
         setupRecyclerView()
 
         sendButton.setOnClickListener {
-            val messageText = messageInput.text.toString().trim()
-            if (messageText.isNotEmpty()) {
-                val userMessage = Message(messageText, true)
-                chatAdapter.addMessage(userMessage)
-                chatRecyclerView.scrollToPosition(messages.size - 1)
-
-                // Simulate bot response
-                val botResponse = Message("Это автоматический ответ.", false)
-                chatAdapter.addMessage(botResponse)
-                chatRecyclerView.scrollToPosition(messages.size - 1)
-
-                messageInput.text.clear()
-            }
+            handleSendMessage()
         }
 
         if (messages.isEmpty()) {
-            messages.add(Message("Здравствуйте! Чем я могу вам помочь?", false))
+            messages.add(Message("Здравствуйте! Я ваш личный ассистент на базе Cohere. Спросите меня о чем-нибудь.", false))
             chatAdapter.notifyDataSetChanged()
         }
 
@@ -68,5 +58,41 @@ class ChatBotFragment : Fragment() {
         val layoutManager = LinearLayoutManager(context)
         layoutManager.stackFromEnd = true
         chatRecyclerView.layoutManager = layoutManager
+    }
+
+    private fun handleSendMessage() {
+        val messageText = messageInput.text.toString().trim()
+        if (messageText.isNotEmpty()) {
+            // Add user's message and clear input
+            val userMessage = Message(messageText, true)
+            chatAdapter.addMessage(userMessage)
+            chatRecyclerView.scrollToPosition(messages.size - 1)
+            messageInput.text.clear()
+
+            // Show typing indicator and get bot response
+            addTypingIndicator()
+            getBotResponse(messageText)
+        }
+    }
+
+    private fun addTypingIndicator() {
+        val typingMessage = Message("Печатает...", false)
+        chatAdapter.addMessage(typingMessage)
+        chatRecyclerView.scrollToPosition(messages.size - 1)
+    }
+
+    private fun getBotResponse(userMessage: String) {
+        lifecycleScope.launch {
+            // CORE FIX: Switched from HuggingFaceService to CohereService
+            val response = CohereService.getCompletion(userMessage)
+            // Remove typing indicator
+            messages.removeAt(messages.size - 1)
+            chatAdapter.notifyItemRemoved(messages.size)
+
+            // Add real response
+            val botMessage = Message(response, false)
+            chatAdapter.addMessage(botMessage)
+            chatRecyclerView.scrollToPosition(messages.size - 1)
+        }
     }
 }
