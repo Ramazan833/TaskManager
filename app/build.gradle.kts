@@ -55,7 +55,9 @@ android {
 }
 
 dependencies {
-    // CORE FIX: Reverting from broken version catalog references to explicit dependencies.
+    // CORE FIX: Adding the missing fragment-ktx dependency for the viewModels() delegate.
+    implementation("androidx.fragment:fragment-ktx:1.7.1")
+    
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")

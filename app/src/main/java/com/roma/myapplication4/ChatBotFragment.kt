@@ -9,10 +9,9 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.RelativeLayout
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels // CORE FIX: Import activityViewModels delegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.launch
 
 class ChatBotFragment : Fragment() {
 
@@ -20,7 +19,10 @@ class ChatBotFragment : Fragment() {
     private lateinit var messageInput: EditText
     private lateinit var sendButton: ImageButton
     private lateinit var chatAdapter: ChatAdapter
-    private val messages = mutableListOf<Message>()
+
+    // CORE FIX: Scope the ViewModel to the Activity's lifecycle, not the Fragment's.
+    // This ensures the same ViewModel instance is used across fragment transactions.
+    private val chatViewModel: ChatViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,59 +42,30 @@ class ChatBotFragment : Fragment() {
 
         setupRecyclerView()
 
-        sendButton.setOnClickListener {
-            handleSendMessage()
+        // Observe the messages LiveData from the ViewModel
+        chatViewModel.messages.observe(viewLifecycleOwner) {
+            chatAdapter.submitList(it) {
+                // Scroll to the bottom after the list is updated
+                chatRecyclerView.scrollToPosition(it.size - 1)
+            }
         }
 
-        if (messages.isEmpty()) {
-            messages.add(Message("Здравствуйте! Я ваш личный ассистент на базе Cohere. Спросите меня о чем-нибудь.", false))
-            chatAdapter.notifyDataSetChanged()
+        sendButton.setOnClickListener {
+            val messageText = messageInput.text.toString().trim()
+            if (messageText.isNotEmpty()) {
+                chatViewModel.sendMessage(messageText)
+                messageInput.text.clear()
+            }
         }
 
         return view
     }
 
     private fun setupRecyclerView() {
-        chatAdapter = ChatAdapter(messages)
-        chatRecyclerView.adapter = chatAdapter
+        chatAdapter = ChatAdapter()
         val layoutManager = LinearLayoutManager(context)
         layoutManager.stackFromEnd = true
+        chatRecyclerView.adapter = chatAdapter
         chatRecyclerView.layoutManager = layoutManager
-    }
-
-    private fun handleSendMessage() {
-        val messageText = messageInput.text.toString().trim()
-        if (messageText.isNotEmpty()) {
-            // Add user's message and clear input
-            val userMessage = Message(messageText, true)
-            chatAdapter.addMessage(userMessage)
-            chatRecyclerView.scrollToPosition(messages.size - 1)
-            messageInput.text.clear()
-
-            // Show typing indicator and get bot response
-            addTypingIndicator()
-            getBotResponse(messageText)
-        }
-    }
-
-    private fun addTypingIndicator() {
-        val typingMessage = Message("Печатает...", false)
-        chatAdapter.addMessage(typingMessage)
-        chatRecyclerView.scrollToPosition(messages.size - 1)
-    }
-
-    private fun getBotResponse(userMessage: String) {
-        lifecycleScope.launch {
-            // CORE FIX: Switched from HuggingFaceService to CohereService
-            val response = CohereService.getCompletion(userMessage)
-            // Remove typing indicator
-            messages.removeAt(messages.size - 1)
-            chatAdapter.notifyItemRemoved(messages.size)
-
-            // Add real response
-            val botMessage = Message(response, false)
-            chatAdapter.addMessage(botMessage)
-            chatRecyclerView.scrollToPosition(messages.size - 1)
-        }
     }
 }
