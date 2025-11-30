@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_chatbot"
         android:title="Чат-Бот" />
     <item
+        android:id="@+id/navigation_statistics"
+        android:icon="@drawable/ic_insert_chart"
+        android:title="Статистика" />
+    <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile"
         android:title="Профиль" />

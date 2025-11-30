@@ -21,6 +21,7 @@ class HomeActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.navigation_home -> selectedFragment = HomeFragment()
                 R.id.navigation_chatbot -> selectedFragment = ChatBotFragment()
+                R.id.navigation_statistics -> selectedFragment = StatisticsFragment()
                 R.id.navigation_profile -> selectedFragment = ProfileFragment()
             }
             if (selectedFragment != null) {
