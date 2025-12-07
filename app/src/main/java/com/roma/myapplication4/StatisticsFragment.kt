@@ -1,5 +1,6 @@
 package com.roma.myapplication4
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
@@ -15,8 +17,11 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.DefaultValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.PercentFormatter
+import com.roma.myapplication4.viewmodel.TaskViewModel
 
 class StatisticsFragment : Fragment() {
+
+    private lateinit var taskViewModel: TaskViewModel
 
     private val chartColors = listOf(
         Color.parseColor("#74b9ff"),
@@ -26,16 +31,80 @@ class StatisticsFragment : Fragment() {
         Color.parseColor("#fd79a8")
     )
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_statistics, container, false)
+        return inflater.inflate(R.layout.fragment_statistics, container, false)
+    }
 
-        setupBarChart(view.findViewById(R.id.barChart))
-        setupPieChart(view.findViewById(R.id.pieChart))
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        return view
+        val userEmail = getCurrentUserEmail()
+        if (userEmail != null) {
+            taskViewModel.getTasksForUser(userEmail).observe(viewLifecycleOwner) { tasks ->
+                view.findViewById<BarChart>(R.id.tasksBarChart)?.let {
+                    setupTasksBarChart(it, tasks.size)
+                }
+            }
+        }
+
+        view.findViewById<BarChart>(R.id.barChart)?.let { setupBarChart(it) }
+        view.findViewById<PieChart>(R.id.pieChart)?.let { setupPieChart(it) }
+    }
+
+    private fun setupTasksBarChart(barChart: BarChart, taskCount: Int) {
+        val entries = ArrayList<BarEntry>()
+        entries.add(BarEntry(0f, taskCount.toFloat()))
+
+        val dataSet = BarDataSet(entries, "Задачи к выполнению")
+        dataSet.color = chartColors[0] // A single color for the bar
+        dataSet.setValueTextColor(Color.parseColor("#34495E"))
+        dataSet.setValueTypeface(Typeface.DEFAULT_BOLD)
+        dataSet.valueTextSize = 14f // Make value text bigger
+
+        val barData = BarData(dataSet)
+        barData.barWidth = 0.2f // A bit narrower bar
+        barData.setValueFormatter(DefaultValueFormatter(0))
+
+        barChart.data = barData
+
+        // val roundedRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
+        // roundedRenderer.radius = 20f
+        // barChart.renderer = roundedRenderer
+
+        barChart.description.isEnabled = false
+        barChart.legend.isEnabled = false
+        barChart.animateY(1500)
+        barChart.setDrawValueAboveBar(true)
+        barChart.setDrawGridBackground(false)
+        barChart.setPinchZoom(false)
+        barChart.isDoubleTapToZoomEnabled = false
+
+        val xAxis = barChart.xAxis
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.setDrawGridLines(false)
+        xAxis.granularity = 1f
+        xAxis.setDrawLabels(false) // Hide X-axis labels as it's a single value
+        xAxis.setDrawAxisLine(false) // Hide the axis line itself
+
+        barChart.axisLeft.isEnabled = false
+        barChart.axisRight.isEnabled = false
+
+        barChart.marker = null // Disable marker for this chart
+
+        barChart.invalidate()
+    }
+
+    private fun getCurrentUserEmail(): String? {
+        val prefs = requireActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return prefs.getString("email", null)
     }
 
     private fun setupBarChart(barChart: BarChart) {
@@ -60,10 +129,9 @@ class StatisticsFragment : Fragment() {
 
         barChart.data = barData
 
-        // ---Rounded Bar Chart Renderer---
-        val roundedRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
-        roundedRenderer.radius = 30f
-        barChart.renderer = roundedRenderer
+        // val roundedRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
+        // roundedRenderer.radius = 30f
+        // barChart.renderer = roundedRenderer
 
         // --- UI/UX Customization ---
         barChart.description.isEnabled = false

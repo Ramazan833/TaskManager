@@ -29,6 +29,11 @@ class HomeFragment : Fragment() {
     private lateinit var rvTasks: RecyclerView
     private lateinit var emptyStateLayout: LinearLayout
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,7 +50,6 @@ class HomeFragment : Fragment() {
 
         setupRecyclerView()
 
-        taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
         taskViewModel.getTasksForUser(email).observe(viewLifecycleOwner) { tasks ->
             adapter.updateTasks(tasks)
             updateEmptyState(tasks.isEmpty())
