@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.charts.BarChart
@@ -46,60 +47,17 @@ class StatisticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val tvTaskCount = view.findViewById<TextView>(R.id.tvTaskCount)
+
         val userEmail = getCurrentUserEmail()
         if (userEmail != null) {
             taskViewModel.getTasksForUser(userEmail).observe(viewLifecycleOwner) { tasks ->
-                view.findViewById<BarChart>(R.id.tasksBarChart)?.let {
-                    setupTasksBarChart(it, tasks.size)
-                }
+                tvTaskCount.text = tasks.size.toString()
             }
         }
 
         view.findViewById<BarChart>(R.id.barChart)?.let { setupBarChart(it) }
         view.findViewById<PieChart>(R.id.pieChart)?.let { setupPieChart(it) }
-    }
-
-    private fun setupTasksBarChart(barChart: BarChart, taskCount: Int) {
-        val entries = ArrayList<BarEntry>()
-        entries.add(BarEntry(0f, taskCount.toFloat()))
-
-        val dataSet = BarDataSet(entries, "Задачи к выполнению")
-        dataSet.color = chartColors[0] // A single color for the bar
-        dataSet.setValueTextColor(Color.parseColor("#34495E"))
-        dataSet.setValueTypeface(Typeface.DEFAULT_BOLD)
-        dataSet.valueTextSize = 14f // Make value text bigger
-
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.2f // A bit narrower bar
-        barData.setValueFormatter(DefaultValueFormatter(0))
-
-        barChart.data = barData
-
-        // val roundedRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
-        // roundedRenderer.radius = 20f
-        // barChart.renderer = roundedRenderer
-
-        barChart.description.isEnabled = false
-        barChart.legend.isEnabled = false
-        barChart.animateY(1500)
-        barChart.setDrawValueAboveBar(true)
-        barChart.setDrawGridBackground(false)
-        barChart.setPinchZoom(false)
-        barChart.isDoubleTapToZoomEnabled = false
-
-        val xAxis = barChart.xAxis
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.setDrawGridLines(false)
-        xAxis.granularity = 1f
-        xAxis.setDrawLabels(false) // Hide X-axis labels as it's a single value
-        xAxis.setDrawAxisLine(false) // Hide the axis line itself
-
-        barChart.axisLeft.isEnabled = false
-        barChart.axisRight.isEnabled = false
-
-        barChart.marker = null // Disable marker for this chart
-
-        barChart.invalidate()
     }
 
     private fun getCurrentUserEmail(): String? {
@@ -128,10 +86,6 @@ class StatisticsFragment : Fragment() {
         barData.setValueFormatter(DefaultValueFormatter(0))
 
         barChart.data = barData
-
-        // val roundedRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
-        // roundedRenderer.radius = 30f
-        // barChart.renderer = roundedRenderer
 
         // --- UI/UX Customization ---
         barChart.description.isEnabled = false
